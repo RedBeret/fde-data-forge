@@ -1,0 +1,27 @@
+{
+  "manifest_version": 1,
+  "messiness": "sample",
+  "seed": 42,
+  "synthetic_notice": "All data is synthetic. Meridian Fabrication Co. is fictional.",
+  "defects": {
+    "parts": {
+      "part_number_format_drift": 3,
+      "description": "Rows using legacy part number formats rather than the current PN-{N:04d} scheme."
+    },
+    "suppliers": {
+      "near_duplicate_names": 1,
+      "invalid_emails": 0,
+      "description": "Supplier name variants and malformed contact email addresses in the sample export."
+    },
+    "change_orders": {
+      "state_vocabulary_inconsistency": 0,
+      "impossible_dates": 0,
+      "description": "State vocabulary variants and close dates before open dates in the sample export."
+    }
+  },
+  "row_counts": {
+    "parts": 5,
+    "suppliers": 5,
+    "change_orders": 12
+  }
+}
