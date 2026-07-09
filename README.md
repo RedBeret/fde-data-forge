@@ -10,6 +10,8 @@
 
 The tool handles the full detection-to-normalization pipeline: encoding-aware CSV/XLSX ingestion, fuzzy supplier deduplication, part number era classification, state vocabulary normalization, and validation against a ground-truth manifest.
 
+<p align="center"><img src="demo/demo.gif" alt="Cleaning messy exports and scoring the result against ground truth" width="820"></p>
+
 ---
 
 ## Architecture
