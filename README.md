@@ -57,7 +57,22 @@ fde report \
 
 **Windows:** run `run.bat` to install and verify.
 
-The `samples/` directory includes small exports copied from `acme-parts-cloud`, plus a matching sample manifest. No account, tenant, API key, or running Acme service is needed for the sample report.
+The `samples/` directory includes small exports copied from `acme-parts-cloud` (300 parts, 60 suppliers, 300 change orders), plus the matching ground-truth manifest. No account, tenant, API key, or running Acme service is needed for the sample report.
+
+### Results on the bundled sample
+
+Output of `make sample-report` against the committed sample — rerun it yourself to reproduce:
+
+| Category | Expected | Detected | Rate |
+|---|---:|---:|---:|
+| part_number_non_standard | 75 | 75 | 100% |
+| supplier_near_duplicates | 24 | 18 | 75% |
+| invalid_emails | 6 | 8 | 100%* |
+| state_vocabulary_variants | 24 | 24 | 100% |
+| impossible_dates | 11 | 11 | 100% |
+| **overall** | **140** | **136** | **97.1%** |
+
+Two honest wrinkles worth knowing about. The near-duplicate detector misses supplier variants that differ by more than casing and punctuation (fuzzy threshold trades recall for precision — see QUIRKS.md). And the email validator is stricter than the seeder, so it flags two extra addresses the manifest doesn't count; the rate is capped at 100%.
 
 ---
 
