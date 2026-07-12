@@ -1,27 +1,42 @@
 {
-  "manifest_version": 1,
-  "messiness": "sample",
-  "seed": 42,
-  "synthetic_notice": "All data is synthetic. Meridian Fabrication Co. is fictional.",
   "defects": {
+    "change_orders": {
+      "description": "State field using mixed vocabulary (open/OPEN/In-Work). Closed timestamps before opened timestamps.",
+      "impossible_dates": 11,
+      "state_vocabulary_inconsistency": 24
+    },
+    "part_revisions": {
+      "description": "Rev codes mixing letter and numeric schemes within the same part. Retroactive effective dates where revision predates predecessor.",
+      "retroactive_dates": 139,
+      "scheme_mixing": 19
+    },
     "parts": {
-      "part_number_format_drift": 3,
-      "description": "Rows using legacy part number formats rather than the current PN-{N:04d} scheme."
+      "description": "Part numbers using legacy era formats (2019-PN-N or P{N}) instead of current PN-{N:04d} scheme.",
+      "part_number_format_drift": 75
+    },
+    "purchase_orders": {
+      "description": "Unit prices with magnitude errors (100x or 0.01x off). Mixed currencies without conversion (compare at face value).",
+      "mixed_currencies": 33,
+      "price_magnitude_errors": 0
     },
     "suppliers": {
-      "near_duplicate_names": 1,
-      "invalid_emails": 0,
-      "description": "Supplier name variants and malformed contact email addresses in the sample export."
-    },
-    "change_orders": {
-      "state_vocabulary_inconsistency": 0,
-      "impossible_dates": 0,
-      "description": "State vocabulary variants and close dates before open dates in the sample export."
+      "defunct_active_refs": 5,
+      "description": "Supplier names appearing in multiple casings/abbreviations. Invalid or malformed contact email addresses. Inactive suppliers still referenced in purchase orders.",
+      "invalid_emails": 6,
+      "near_duplicate_names": 24
     }
   },
+  "manifest_version": 1,
+  "messiness": "medium",
   "row_counts": {
-    "parts": 5,
-    "suppliers": 5,
-    "change_orders": 12
-  }
+    "audit_log": 50,
+    "change_orders": 300,
+    "part_revisions": 692,
+    "parts": 300,
+    "purchase_orders": 50,
+    "suppliers": 60,
+    "users": 20
+  },
+  "seed": 42,
+  "synthetic_notice": "All data is synthetic. Meridian Fabrication Co. is fictional."
 }
