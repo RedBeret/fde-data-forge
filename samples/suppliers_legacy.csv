@@ -1,6 +1,61 @@
-supplier_code,name,country,contact_email,active
-VRT-001,Vortex Metals,US,procurement@vortex.com,1
-VRT-001B,Vortex Metals Inc.,US,procurement@vortex.com,1
-APC-022,Apex Composites,CA,info@apexcomp.ca,1
-GBL-055,Global Bearings Ltd,GB,sales@globalbear.co.uk,0
-APC-099,Apex Composites Corp,CA,info@apexcomp.ca,1
+supplier_name,supplier_code,country,email
+Vortex Metals,SUP-0001,CI,robert41@morgan-jones.com
+Cascade Composites,SUP-0002,GH,lindsey40@jones.com
+Pinnacle Alloys,SUP-0003,MK,ajonesgraves.com
+Summit Fasteners Ltd,SUP-0004,HR,clayton10@stewart-hughes.net
+Apex Hydraulics PLC,SUP-0005,HU,brittany07@buck-bell.com
+Delta Seals Group,SUP-0006,TG,acarter@houston-thomas.info
+Omega Bearings Inc,SUP-0007,JO,gbrown@orr.net
+Titan Electrical,SUP-0008,VU,kevin20@ramirez.com
+Nova Pneumatics PLC,SUP-0009,HR,christine77@murphy.net
+Meridian Thermal and Sons,SUP-0010,BI,noreply
+Stellar Optics,SUP-0011,MW,Melissa
+Crest Drive Systems Ltd,SUP-0012,LI,patrick66@mckinney.com
+Horizon Polymers PLC,SUP-0013,SK,xyoung@mercado-lewis.biz
+Zenith Coatings PLC,SUP-0014,HT,maldonadobrittany@chase.com
+Atlas Springs PLC,SUP-0015,TD,paulabrown@howell.org
+Vortex Metals,SUP-0016,CH,lisa78@james.info
+Cascade Composites,SUP-0017,ML,yknight@collier.com
+Pinnacle Alloys Ltd,SUP-0018,CH,christopher82@murphy-smith.com
+Summit Fasteners and Sons,SUP-0019,TL,vargaskimberly@franklin-yates.net
+Apex Hydraulics and Sons,SUP-0020,YE,tracisharp@pena.net
+Delta Seals,SUP-0021,GE,cindyfigueroajohnston-mclean.biz
+Omega Bearings,SUP-0022,LS,davisbrandon@williams-jenkins.com
+Titan Electrical Group,SUP-0023,LK,joseph06@martinez-nichols.com
+Nova Pneumatics,SUP-0024,CD,glovergary@bryant.info
+Meridian Thermal,SUP-0025,CV,valenzuelawilliam@bailey-pugh.com
+Stellar Optics Group,SUP-0026,ET,shermanmelissa@walters-neal.biz
+Crest Drive Systems,SUP-0027,UA,qthompson@lucas.com
+Horizon Polymers,SUP-0028,TO,cwarren@anderson-williams.com
+Zenith Coatings and Sons,SUP-0029,TW,amywilliams@lamb-little.net
+Atlas Springs PLC,SUP-0030,MX,matthewdean@garcia-randall.com.invalid
+Vortex Metals Inc.,SUP-0031,MN,rmclaughlin@davenport-white.biz
+Cascade Composites,SUP-0032,CV,sheenagriffin@james-hunt.biz
+Pinnacle Alloys Group,SUP-0033,AO,ramirezjoseph@evans.com
+Summit Fasteners PLC,SUP-0034,PS,cynthiacampbell@fitzpatrick.com.invalid
+Apex Hydraulics,SUP-0035,KI,lcarlson@shaw.com
+Delta Seals and Sons,SUP-0036,LV,fellis@wall.info
+Omega Bearings LLC,SUP-0037,AD,james63@olsen-taylor.com
+Titan Electrical and Sons,SUP-0038,IS,rforbes@nelson.com
+Nova Pneumatics Inc,SUP-0039,GW,hansenkimberly@cook-church.com
+Meridian Thermal and Sons,SUP-0040,ID,khart@dixon-cantu.com
+Stellar Optics Ltd,SUP-0041,GD,sara50@santiago-mccann.com
+Crest Drive Systems Group,SUP-0042,GT,petersonmelissa@kane-green.com
+HORIZON POLYMERS,SUP-0043,GR,tlewis@ellis.com
+Zenith Coatings PLC,SUP-0044,PY,ashleyporter@hall.org
+Atlas Springs Group,SUP-0045,MU,ydalton@shaw-gutierrez.com
+Vortex Metals,SUP-0046,LB,adam78@adkins.com
+Cascade Composites,SUP-0047,SZ,lbarnes@cooper.com
+Pinnacle Alloys Inc,SUP-0048,ID,grobinson@johnson.com
+Summit Fasteners,SUP-0049,TH,xbell@goodwin-randall.com
+Apex Hydraulics,SUP-0050,GR,nhill@cortez.com
+Delta Seals,SUP-0051,KN,scottmark@fernandez.org
+Omega Bearings Group,SUP-0052,ZA,radkins@matthews.com
+Titan Electrical and Sons,SUP-0053,TR,mooreteresaanderson-taylor.net
+Nova Pneumatics,SUP-0054,LR,catherinegarner@miller-thompson.info
+Meridian Thermal PLC,SUP-0055,DM,noreply
+Stellar Optics,SUP-0056,KI,jimenezamy@vincent.net
+Crest Drive Systems and Sons,SUP-0057,CH,susan30@marshall.com
+Horizon Polymers Inc,SUP-0058,MT,campbellmark@prince.org
+Zenith Coatings,SUP-0059,LV,wandamacdonald@woods.com
+Atlas Springs,SUP-0060,CZ,jacobscorey@walker.com
