@@ -31,6 +31,15 @@ graph LR
 
 ## Quick Start
 
+For the CLI, download the wheel from [GitHub Releases](https://github.com/RedBeret/fde-data-forge/releases) and install it directly:
+
+```bash
+python -m pip install ./fde_data_forge-1.1.0-py3-none-any.whl
+fde --help
+```
+
+To reproduce the bundled sample scorecard, clone the repository and install its development requirements:
+
 ```bash
 pip install -r requirements.txt -e .
 
