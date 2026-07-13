@@ -32,9 +32,11 @@ def detect_era_mix(df: pd.DataFrame, col: str = "part_number") -> dict:
     eras = df[col].apply(classify_era)
     counts = eras.value_counts().to_dict()
     unknown = df.loc[eras == "unknown", col].tolist()
+    non_standard_part_numbers = df.loc[eras != "current", col].astype(str).tolist()
     non_standard = sum(v for k, v in counts.items() if k != "current")
     return {
         "era_counts": counts,
         "unknown_format": unknown,
         "non_standard_count": non_standard,
+        "non_standard_part_numbers": non_standard_part_numbers,
     }
