@@ -1,10 +1,15 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "fde-data-forge"
 version = "1.1.0"
+description = "Measured data-cleaning pipeline for messy enterprise exports"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Steven Espinoza" }]
 requires-python = ">=3.12"
 dependencies = [
     "pandas>=2.2,<3",
@@ -18,8 +23,13 @@ dependencies = [
 [project.scripts]
 fde = "fde.cli:cli"
 
+[project.urls]
+Repository = "https://github.com/RedBeret/fde-data-forge"
+Issues = "https://github.com/RedBeret/fde-data-forge/issues"
+
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["fde*"]
 
 [tool.ruff]
 line-length = 100
