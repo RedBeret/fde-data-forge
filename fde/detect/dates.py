@@ -15,7 +15,7 @@ def detect_impossible_dates(
         row_indices: list of integer row indices with the defect
     """
     if open_col not in df.columns or close_col not in df.columns:
-        return {"impossible_date_count": 0, "row_indices": []}
+        return {"impossible_date_count": 0, "row_indices": [], "co_numbers": []}
 
     opened = pd.to_datetime(df[open_col], errors="coerce")
     closed = pd.to_datetime(df[close_col], errors="coerce")
@@ -27,4 +27,9 @@ def detect_impossible_dates(
     return {
         "impossible_date_count": int(mask.sum()),
         "row_indices": df.index[mask].tolist(),
+        "co_numbers": (
+            df.loc[mask, "co_number"].dropna().astype(str).tolist()
+            if "co_number" in df.columns
+            else []
+        ),
     }

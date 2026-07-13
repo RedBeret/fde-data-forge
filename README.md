@@ -6,11 +6,11 @@
 
 > **All data is synthetic.** Meridian Fabrication Co. is a fictional company created for integration demonstrations.
 
-**Fabrication Data Engineering Forge** — a Python CLI tool for ingesting, detecting defects in, and normalizing messy manufacturing data exports. Companion to [acme-parts-cloud](https://github.com/RedBeret/acme-parts-cloud), which generates the source data.
+**Fabrication Data Engineering Forge** — turn a customer's dirty exports into clean, trustworthy data, and **measure defect-detection accuracy with row-level evidence**.
 
-The tool handles the full detection-to-normalization pipeline: encoding-aware CSV/XLSX ingestion, fuzzy supplier deduplication, part number era classification, state vocabulary normalization, and validation against a ground-truth manifest.
+Real integration work starts the same way every time: someone hands you inconsistent CSV exports, a legacy file in the wrong encoding, and a spreadsheet with merged headers. Most cleanup scripts "fix" that data with no way to know what they caught, missed, or silently broke. This pipeline is different because its companion sandbox, [acme-parts-cloud](https://github.com/RedBeret/acme-parts-cloud), ships row-level ground truth for evaluation — so every run ends with a scorecard: **100% recall, 72.7% precision, and 84.2% F1 on the bundled sample**, with false positives and misses shown rather than hidden.
 
-<p align="center"><img src="demo/demo.gif" alt="Cleaning messy exports and scoring the result against ground truth" width="820"></p>
+The pipeline covers ingest → detect → normalize → validate → report: encoding-aware CSV/XLSX ingestion (Windows-1252, merged headers), fuzzy supplier deduplication, part-number era classification, state vocabulary normalization, and validation against the ground-truth manifest. Runs offline in one command — no accounts, keys, or Docker.
 
 ---
 
@@ -19,7 +19,7 @@ The tool handles the full detection-to-normalization pipeline: encoding-aware CS
 ```mermaid
 graph LR
     Raw["Messy Exports<br>(CSV v1/v2 · XLSX · Win-1252)"]
-    Raw --> Ingest["fde ingest<br>encoding-aware readers"]
+    Raw --> Ingest["ingest layer<br>encoding-aware readers"]
     Ingest --> Detect["fde detect<br>era mix · near-dupes<br>state variants · bad dates"]
     Detect --> Normalize["fde normalize<br>canonical PNs · deduped suppliers<br>clean state vocabulary"]
     Detect --> Validate["fde validate<br>vs mess_manifest.json"]
@@ -57,22 +57,24 @@ fde report \
 
 **Windows:** run `run.bat` to install and verify.
 
-The `samples/` directory includes small exports copied from `acme-parts-cloud` (300 parts, 60 suppliers, 300 change orders), plus the matching ground-truth manifest. No account, tenant, API key, or running Acme service is needed for the sample report.
+The `samples/` directory includes reduced exports generated from `acme-parts-cloud` (300 parts, 60 suppliers, 300 change orders), plus the matching manifest v2 ground truth. Exact provenance and count settings are recorded in `samples/PROVENANCE.md`. No account, tenant, API key, or running Acme service is needed for the sample report.
 
-### Results on the bundled sample
+---
+
+## Results on the Bundled Sample
 
 Output of `make sample-report` against the committed sample — rerun it yourself to reproduce:
 
-| Category | Expected | Detected | Rate |
-|---|---:|---:|---:|
-| part_number_non_standard | 75 | 75 | 100% |
-| supplier_near_duplicates | 24 | 18 | 75% |
-| invalid_emails | 6 | 8 | 100%* |
-| state_vocabulary_variants | 24 | 24 | 100% |
-| impossible_dates | 11 | 11 | 100% |
-| **overall** | **140** | **136** | **97.1%** |
+| Category | Expected | Candidates | Matched | Recall | Precision |
+|---|---:|---:|---:|---:|---:|
+| part_number_non_standard | 38 | 38 | 38 | 100% | 100% |
+| supplier_near_duplicates | 10 | 43 | 10 | 100% | 23.3% |
+| invalid_emails | 4 | 4 | 4 | 100% | 100% |
+| state_vocabulary_variants | 25 | 25 | 25 | 100% | 100% |
+| impossible_dates | 11 | 11 | 11 | 100% | 100% |
+| **overall** | **88** | **121** | **88** | **100%** | **72.7%** |
 
-Two honest wrinkles worth knowing about. The near-duplicate detector misses supplier variants that differ by more than casing and punctuation (fuzzy threshold trades recall for precision — see QUIRKS.md). And the email validator is stricter than the seeder, so it flags two extra addresses the manifest doesn't count; the rate is capped at 100%.
+The scorecard uses exact row-key matches from Acme manifest v2. The fuzzy supplier pass is intentionally recall-first: it catches all ten injected relationships, but also proposes 33 pairs that need review. Reporting does not merge those candidates; the separate, explicit `fde normalize --type suppliers` command applies its canonical map. Review that output before using it downstream. Supplier precision is the clear v2 target. Overall micro F1 is 84.2%.
 
 ---
 
@@ -111,6 +113,26 @@ See [QUIRKS.md](QUIRKS.md) for the full defect catalog and normalization rules.
 A data engineer running a synthetic ERP migration starts with exports from acme-parts-cloud: one old parts CSV, one current parts CSV, a legacy supplier export, and a change-order workbook with a merged header row. The first pass is deliberately mechanical: read every row, classify the known defects, normalize only the fields with documented rules, then compare the detected counts against `mess_manifest.json`.
 
 That last step is the point of the project. It turns a cleanup script into a measured pipeline: which defect classes were found, which were missed, and whether a "fix" accidentally hid rows instead of repairing them.
+
+---
+
+## Design Decisions
+
+Three trade-offs shaped v1, documented here because the reasoning matters as much as the code:
+
+**Candidate generation before supplier merging.** The fuzzy threshold (rapidfuzz `token_sort_ratio` at 85%) reaches 100% recall on the bundled injected relationships, but only 23.3% precision. The tool reports candidates instead of silently merging them. Improving precision without losing recall is the headline v2 item.
+
+**Detection before normalization.** Detection and reporting never modify source files. Normalization is a separate explicit command: deterministic rules handle part numbers and states, while supplier normalization applies the fuzzy candidate map and therefore requires review before downstream use.
+
+**File-in/file-out CLI before a warehouse.** v1 stages read and write plain files, so each stage is independently runnable, testable, and legible. A DuckDB serve layer with lineage and quarantine is the v2 step — added once the transformations themselves were proven against ground truth.
+
+---
+
+## Roadmap
+
+- **v2.0 — audit depth:** DuckDB serve schema, quarantine with machine-readable reason codes (test-enforced: input rows == kept + quarantined), entity-resolution decision log so every supplier merge is auditable, results dashboard.
+- **v2.x — local AI query layer:** text-to-SQL over the cleaned schema via Ollama, guarded by SQL AST validation (SELECT-only), table allowlist, and a read-only connection — with a published 25-question eval and accuracy target, in the same measure-don't-claim spirit.
+- **P1:** Microsoft 365 source (Graph API, free dev tenant) for the "supplier tracker lives in SharePoint" scenario.
 
 ---
 

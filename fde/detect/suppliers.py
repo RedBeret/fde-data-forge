@@ -46,7 +46,7 @@ def detect_near_duplicates(df: pd.DataFrame, col: str = "name") -> list[dict]:
 def detect_invalid_emails(df: pd.DataFrame, col: str = "contact_email") -> dict:
     """Detect malformed email addresses."""
     if col not in df.columns:
-        return {"invalid_email_count": 0, "examples": []}
+        return {"invalid_email_count": 0, "examples": [], "supplier_codes": []}
 
     def is_invalid(email: str) -> bool:
         s = str(email).strip()
@@ -56,4 +56,33 @@ def detect_invalid_emails(df: pd.DataFrame, col: str = "contact_email") -> dict:
 
     mask = df[col].apply(is_invalid)
     examples = df.loc[mask, col].head(10).tolist()
-    return {"invalid_email_count": int(mask.sum()), "examples": examples}
+    supplier_codes = (
+        df.loc[mask, "supplier_code"].dropna().astype(str).tolist()
+        if "supplier_code" in df.columns
+        else []
+    )
+    return {
+        "invalid_email_count": int(mask.sum()),
+        "examples": examples,
+        "supplier_codes": supplier_codes,
+    }
+
+
+def detect_near_duplicate_pairs(df: pd.DataFrame) -> list[str]:
+    """Return later->earlier supplier-code pairs whose names meet the fuzzy threshold."""
+    if not {"supplier_code", "name"} <= set(df.columns):
+        return []
+    rows = (
+        df[["supplier_code", "name"]].dropna().sort_values("supplier_code").reset_index(drop=True)
+    )
+    pairs = []
+    for later in range(1, len(rows)):
+        later_code, later_name = rows.iloc[later]
+        for earlier in range(later):
+            earlier_code, earlier_name = rows.iloc[earlier]
+            score = fuzz.token_sort_ratio(
+                str(later_name), str(earlier_name), processor=str.casefold
+            )
+            if score >= SIMILARITY_THRESHOLD:
+                pairs.append(f"{later_code}->{earlier_code}")
+    return pairs

@@ -5,7 +5,11 @@ import pandas as pd
 from fde.detect.dates import detect_impossible_dates
 from fde.detect.part_numbers import classify_era, detect_era_mix
 from fde.detect.states import detect_state_variants
-from fde.detect.suppliers import detect_invalid_emails, detect_near_duplicates
+from fde.detect.suppliers import (
+    detect_invalid_emails,
+    detect_near_duplicate_pairs,
+    detect_near_duplicates,
+)
 
 # ---------------------------------------------------------------------------
 # Part numbers
@@ -54,6 +58,13 @@ def test_detect_era_mix_counts() -> None:
     assert result["era_counts"]["unknown"] == 1
     assert result["non_standard_count"] == 5  # 2019 + legacy + unknown
     assert "BOGUS" in result["unknown_format"]
+    assert set(result["non_standard_part_numbers"]) == {
+        "2019-PN-100",
+        "P5",
+        "P6",
+        "P7",
+        "BOGUS",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -86,6 +97,18 @@ def test_detect_near_duplicates_no_false_positives() -> None:
     df = pd.DataFrame({"name": ["Apex Composites", "Vortex Metals", "Global Bearings"]})
     groups = detect_near_duplicates(df)
     assert groups == []
+
+
+def test_detect_near_duplicate_pairs_uses_stable_codes() -> None:
+    df = pd.DataFrame(
+        {
+            "supplier_code": ["SUP-0001", "SUP-0002", "SUP-0003"],
+            "name": ["Vortex Metals", "Apex Components", "VORTEX METALS"],
+        }
+    )
+    expected = ["SUP-0003->SUP-0001"]
+    assert detect_near_duplicate_pairs(df) == expected
+    assert detect_near_duplicate_pairs(df.sample(frac=1, random_state=42)) == expected
 
 
 def test_detect_invalid_emails() -> None:
