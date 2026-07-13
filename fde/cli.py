@@ -25,7 +25,7 @@ FILE_TYPES = click.Choice(["parts-v1", "parts-v2", "suppliers", "change-orders"]
 
 
 @click.group()
-@click.version_option("1.0.0", prog_name="fde")
+@click.version_option("1.1.0", prog_name="fde")
 def cli() -> None:
     """fde-data-forge — detect and normalize messy manufacturing data exports.
 

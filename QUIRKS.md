@@ -41,7 +41,7 @@ The same physical supplier appears under multiple name variants due to inconsist
 
 - `Vortex Metals` / `Vortex Metals Inc.` / `VORTEX METALS`
 
-**What fde detects:** fuzzy matching via `rapidfuzz.token_sort_ratio` at 85% similarity threshold. Returns groups of near-duplicate names.
+**What fde detects:** fuzzy matching via `rapidfuzz.token_sort_ratio` at 85% similarity threshold. It emits review candidates, not automatic merges. On the bundled sample it finds all injected relationships but also produces false positives.
 
 **What fde normalizes:** all variants in a group are mapped to the first-encountered canonical name.
 
@@ -83,4 +83,4 @@ Some change orders have `closed_at` timestamps that precede `opened_at`. This ha
 
 ## Validation
 
-The `fde validate` command compares detected counts against `mess_manifest.json` produced by the acme-parts-cloud seeder. This gives a **detection rate** per defect category — a quantitative measure of how well your pipeline finds the known defects.
+The `fde validate` command requires Acme manifest v2 and matches stable detected row keys against its ground-truth keys. Reports include candidates, matches, false positives, misses, recall, precision, and F1. Aggregate count-only manifests are rejected for accuracy scoring.
