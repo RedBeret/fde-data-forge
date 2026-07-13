@@ -205,21 +205,20 @@ def validate(
     if parts:
         df = parts_ingest.ingest_parts(parts)
         era_result = pn_detect.detect_era_mix(df)
-        detection_results["part_number_non_standard"] = era_result["non_standard_count"]
+        detection_results["part_number_non_standard"] = era_result["non_standard_part_numbers"]
 
     if suppliers_path:
         df = sup_ingest.ingest_suppliers(suppliers_path)
-        dup_groups = sup_detect.detect_near_duplicates(df)
-        detection_results["supplier_near_duplicates"] = sum(len(g["variants"]) for g in dup_groups)
+        detection_results["supplier_near_duplicates"] = sup_detect.detect_near_duplicate_pairs(df)
         email_result = sup_detect.detect_invalid_emails(df)
-        detection_results["invalid_emails"] = email_result["invalid_email_count"]
+        detection_results["invalid_emails"] = email_result["supplier_codes"]
 
     if change_orders_path:
         df = co_ingest.ingest_change_orders(change_orders_path)
         st_result = st_detect.detect_state_variants(df)
-        detection_results["state_vocabulary_variants"] = st_result["total_non_canonical"]
+        detection_results["state_vocabulary_variants"] = st_result["co_numbers"]
         dt_result = dt_detect.detect_impossible_dates(df)
-        detection_results["impossible_dates"] = dt_result["impossible_date_count"]
+        detection_results["impossible_dates"] = dt_result["co_numbers"]
 
     validation = validate_against_manifest(mf, detection_results)
     report_builder.print_validation_report(validation)
@@ -323,24 +322,21 @@ def report(
         detection_flat = {}
         if "part_number_eras" in all_detection:
             detection_flat["part_number_non_standard"] = all_detection["part_number_eras"][
-                "non_standard_count"
+                "non_standard_part_numbers"
             ]
         if "near_duplicate_groups" in all_detection:
-            detection_flat["supplier_near_duplicates"] = sum(
-                len(g["variants"]) for g in all_detection["near_duplicate_groups"]
+            supplier_df = sup_ingest.ingest_suppliers(suppliers_path)
+            detection_flat["supplier_near_duplicates"] = sup_detect.detect_near_duplicate_pairs(
+                supplier_df
             )
         if "invalid_emails" in all_detection:
-            detection_flat["invalid_emails"] = all_detection["invalid_emails"][
-                "invalid_email_count"
-            ]
+            detection_flat["invalid_emails"] = all_detection["invalid_emails"]["supplier_codes"]
         if "state_variants" in all_detection:
             detection_flat["state_vocabulary_variants"] = all_detection["state_variants"][
-                "total_non_canonical"
+                "co_numbers"
             ]
         if "impossible_dates" in all_detection:
-            detection_flat["impossible_dates"] = all_detection["impossible_dates"][
-                "impossible_date_count"
-            ]
+            detection_flat["impossible_dates"] = all_detection["impossible_dates"]["co_numbers"]
         validation = validate_against_manifest(mf, detection_flat)
         report_builder.print_validation_report(validation)
 

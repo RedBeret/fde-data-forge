@@ -76,10 +76,14 @@ def print_validation_report(
     table.add_column("Category", style="cyan", no_wrap=True)
     table.add_column("Expected", justify="right")
     table.add_column("Detected", justify="right")
-    table.add_column("Detection Rate", justify="right")
+    table.add_column("Matched", justify="right")
+    table.add_column("FP", justify="right")
+    table.add_column("Missed", justify="right")
+    table.add_column("Recall", justify="right")
+    table.add_column("Precision", justify="right")
 
     for category, row in validation.items():
-        rate = row["detection_rate"]
+        rate = row.get("recall", row["detection_rate"])
         pct = f"{rate * 100:.1f}%"
         if rate >= 0.90:
             color = "green"
@@ -92,7 +96,11 @@ def print_validation_report(
             f"[{style}]{category}[/{style}]" if style else category,
             str(row["expected"]),
             str(row["detected"]),
+            str(row.get("matched", row["detected"])),
+            str(row.get("false_positives", 0)),
+            str(row.get("false_negatives", 0)),
             f"[{color}]{pct}[/{color}]",
+            f"{row.get('precision', 1.0) * 100:.1f}%",
         )
 
     console.print(table)
@@ -102,20 +110,25 @@ def print_summary_panel(detection: dict, validation: dict | None = None) -> None
     """Print a summary panel with key metrics."""
     lines = []
 
-    # Count total defects found
-    total = 0
-    for val in detection.values():
-        count = _result_count(val)
-        if isinstance(count, int | float):
-            total += int(count)
-    lines.append(f"[yellow]Total defects detected:[/yellow] {total:,}")
-
     if validation and "_overall" in validation:
         ov = validation["_overall"]
-        rate = ov["detection_rate"] * 100
+        rate = ov["recall"] * 100
         color = "green" if rate >= 90 else "yellow" if rate >= 70 else "red"
-        lines.append(f"[yellow]Overall detection rate:[/yellow] [{color}]{rate:.1f}%[/{color}]")
+        lines.append(f"[yellow]Candidates:[/yellow] {ov['detected']:,}")
+        lines.append(f"[yellow]Matched:[/yellow] {ov['matched']:,}")
+        lines.append(f"[yellow]False positives:[/yellow] {ov['false_positives']:,}")
+        lines.append(f"[yellow]Missed:[/yellow] {ov['false_negatives']:,}")
+        lines.append(f"[yellow]Recall:[/yellow] [{color}]{rate:.1f}%[/{color}]")
+        lines.append(f"[yellow]Precision:[/yellow] {ov['precision'] * 100:.1f}%")
+        lines.append(f"[yellow]F1:[/yellow] {ov['f1'] * 100:.1f}%")
         lines.append(f"[yellow]Manifest expected:[/yellow] {ov['expected']:,}")
+    else:
+        total = 0
+        for val in detection.values():
+            count = _result_count(val)
+            if isinstance(count, int | float):
+                total += int(count)
+        lines.append(f"[yellow]Total defects detected:[/yellow] {total:,}")
 
     console.print(Panel("\n".join(lines), title="[bold]Summary[/bold]", border_style="blue"))
 
